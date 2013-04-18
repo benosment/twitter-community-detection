@@ -4,10 +4,8 @@ import tweepy
 import time
 import sys
 import settings
-
-def log_error(msg):
-    timestamp = time.strftime('%a %b %d %Y %H:%M:%S')
-    sys.stderr.write("%s - %s\n" % (timestamp,msg))
+import logging
+import logging.config
 
 
 class RetweetStreamListener(tweepy.StreamListener):
@@ -16,14 +14,14 @@ class RetweetStreamListener(tweepy.StreamListener):
         if (status.user.lang == 'en') and hasattr(status, 'retweeted_status'):
             print "%s: %s" % (status.user.screen_name.encode('utf-8'), status.text.encode('utf-8'))
     def on_limit(self, track):
-        log_error("Rate limited")
+        logging.warning("Rate limited")
         time.sleep(3)
 
     def on_timeout(self):
-        log_error("Timeout.")
+        logging.warning("Timeout.")
 
     def on_error(self, status_code):
-        log_error("Status code: %s" % status_code)
+        logging.error("Status code: %s" % status_code)
         time.sleep(3)
         return True  # return True to keep the stream alive
 
@@ -37,13 +35,33 @@ def main():
     #stream.retweet()
     #stream.filter(track=['boston'])
 
+def logger_init():
+    # load logging config file
+    logging.config.fileConfig('logging.conf')
+
+    # create logger
+    logger = logging.getLogger('streamLogger')
+
+    logger.debug('debug message')
+    logger.info('info message')
+    logger.warn('warn message')
+    logger.error('error message')
+    logger.critical('critical message')
+
+    # return logger?
+    # TODO - write to file? 
+
+
 if __name__ == '__main__':
+    # initialize the logger
+    logger_init()
+
     try:
         main()
     except KeyboardInterrupt:
         sys.exit()
     except Exception,e:
-        log_error("Exception: %s" % str(e))
+        logging.getLogger('streamLogger').exception("Exception %s" % str(e))
         time.sleep(3)
 
 
