@@ -1,12 +1,1 @@
-Wed Apr 17 2013 22:01:19 - streamLogger - DEBUG - debug message
-Wed Apr 17 2013 22:01:19 - streamLogger - INFO - info message
-Wed Apr 17 2013 22:01:19 - streamLogger - WARNING - warn message
-Wed Apr 17 2013 22:01:19 - streamLogger - ERROR - error message
-Wed Apr 17 2013 22:01:19 - streamLogger - CRITICAL - critical message
-Wed Apr 17 2013 22:01:19 - streamLogger - ERROR - Exception __init__() takes at least 4 arguments (3 given)
-Traceback (most recent call last):
-  File "stream.py", line 60, in <module>
-    main()
-  File "stream.py", line 33, in main
-    stream = tweepy.Stream(auth, listener)
-TypeError: __init__() takes at least 4 arguments (3 given)
+Sun Apr 28 2013 12:10:03 - streamLogger - INFO - Init
