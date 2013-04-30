@@ -9,18 +9,31 @@ import logging.config
 import pdb
 import json
 from pymongo import MongoClient
+import db
+
+tweet_count = 0
 
 class RetweetStreamListener(tweepy.StreamListener):
+  def on_status(self, status):
+    print status
+
   def on_data(self, data):
       # handle the raw data
       if 'in_reply_to_status_id' in data:
         status = tweepy.Status.parse(self.api, json.loads(data))
-        # TODO - still getting non-english tweets, try stream.filter(lang=['en'])
-        if (status.user.lang == 'en') and hasattr(status, 'retweeted_status'):
+        # still getting non-english tweets, stream.filter(lang=['en']) does not
+        # work yet. TODO - try hooking in CLD (common lang. detector) from chromium
+        #if (status.user.lang == 'en') and hasattr(status, 'retweeted_status'):
+        #if hasattr(status, 'retweeted_status'):
+        if (status.user.lang == 'en'):
           print "%s: %s" % (status.user.screen_name.encode('utf-8'), 
                             status.text.encode('utf-8'))
+          global tweet_count
+          tweet_count += 1
+          if tweet_count % 100 == 0:
+            print "Tweet count: ", tweet_count
           # is it better to have the DB connection as an attribute of this listener?
-          insert_tweet(json.loads(data))
+          db.insert_tweet(json.loads(data))
 
   def on_limit(self, track):
     logging.warning("Rate limited")
@@ -34,34 +47,19 @@ class RetweetStreamListener(tweepy.StreamListener):
     time.sleep(3)
     return True  # return True to keep the stream alive
 
-
-def connect_db():
-  client = MongoClient()
-  db = client.twitter_database
-  return db
-
-def insert_tweet(tweet):
-  ''' 
-      Tweet is expected to be in json format
-  '''
-  db = connect_db()
-  tweets = db.tweets
-  tweets.insert(tweet)  
-
 def logger_init():
   # load logging config file
   logging.config.fileConfig('logging.conf')
   logging.getLogger('streamLogger').info("Init")
 
+
 def main():
   auth = tweepy.OAuthHandler(settings.CONSUMER_KEY, settings.CONSUMER_SECRET)
   auth.set_access_token(settings.ACCESS_TOKEN, settings.ACCESS_TOKEN_SECRET)
-  db = connect_db()
   listener = RetweetStreamListener()
   stream = tweepy.Stream(auth, listener)
-  stream.sample()
-  #stream.retweet()
-  #stream.filter(track=['boston'])
+  # filter stream by location, coordinates are for NYC
+  stream.filter(locations=[-74,40,-73,41])
 
 if __name__ == '__main__':
   # initialize the logger
@@ -72,6 +70,5 @@ if __name__ == '__main__':
   except KeyboardInterrupt:
     sys.exit()
   except Exception,e:
-    # TODO - what's the traceback here?
     logging.getLogger('streamLogger').exception("Exception %s" % str(e))
     time.sleep(3)
