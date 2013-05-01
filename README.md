@@ -6,3 +6,6 @@ Domain
 
 Requires the following modules:
  - tweepy (TODO - cite github page)
+ - networkx
+ - matplotlib
+ - pymongo
