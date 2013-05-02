@@ -36,3 +36,8 @@ nosetests.xml
 
 # ignore emacs partital files
 *~
+
+# ignore graphs/images
+*.png
+*.pdf
+

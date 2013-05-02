@@ -1,0 +1,35 @@
+# 10 tweets
+Number of nodes: 25
+Number of edges: 14
+Number of connected component subgraphs:  11
+Largest subgraph:  4
+
+# 100 tweets
+Number of nodes: 217
+Number of edges: 121
+Number of connected component subgraphs:  99
+Largest subgraph:  5
+
+# 1k tweets
+Number of nodes: 1550
+Number of edges: 970
+Number of connected component subgraphs:  606
+Largest subgraph:  13
+
+# 10k tweets
+Number of nodes: 10932
+Number of edges: 8043
+Number of connected component subgraphs:  3141
+Largest subgraph:  542
+
+# 100k tweets
+Number of nodes: 75961
+Number of edges: 73027
+Number of connected component subgraphs:  9412
+Largest subgraph:  42897
+
+# 1 million tweets
+Number of nodes: 79588
+Number of edges: 77207
+Number of connected component subgraphs:  9553
+Largest subgraph:  46015

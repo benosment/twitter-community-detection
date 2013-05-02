@@ -36,3 +36,7 @@ def get_tweets():
 def get_num_tweets():
   cursor = get_tweets()
   return cursor.count()
+
+if __name__ == '__main__':
+  filter_tweets()
+  
