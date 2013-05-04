@@ -11,8 +11,7 @@ def get_mentions(tweet):
   return tweet['entities']['user_mentions']
 
 def create_graph(tweets_cursor, limit=None): 
- g = nx.DiGraph() # do we care about the direction? multigraph?
-  #g = nx.Graph()
+  g = nx.DiGraph() 
   count = 0
   try: 
     while True:
@@ -39,7 +38,8 @@ def create_graph(tweets_cursor, limit=None):
 def print_summary(graph):
   print "Number of nodes: %d" % graph.number_of_nodes()
   print "Number of edges: %d" % graph.number_of_edges()
-  subgraphs = nx.connected_component_subgraphs(graph)
+  undirected_graph = graph.to_undirected()
+  subgraphs = nx.connected_component_subgraphs(undirected_graph)
   print "Number of connected component subgraphs: ", len(subgraphs)
   print "Largest subgraph: ", subgraphs[0].number_of_nodes()
   print "type: ", type(graph), type(subgraphs[0])
@@ -55,21 +55,31 @@ def print_graph(graph, filename='graph.png'):
   nx.draw(graph, pos, with_labels=False, node_size=50)
   plt.savefig(filename)
 
+def display_graph(graph):
+  pos = nx.spring_layout(graph)
+  nx.draw(graph, pos, with_labels=False, node_size=50)
+  plt.show()
+
 def save_graph(graph, filename):
   nx.write_gexf(graph, filename)
 
 def load_graph(filename):
   return nx.read_gexf(filename)
 
-def get_graph(graph_name):
+def get_graph(graph_name, limit=100):
   try: # try to load the graph
     g = load_graph(graph_name)
   except IOError: # if there is an issue, create the graph
     tweets = db.get_tweets()
-    g = create_graph(tweets, limit=100)
+    g = create_graph(tweets, limit)
     save_graph(g, graph_name)
   return g
-  
+
+def get_subgraphs(graph, k=5):
+  undirected_graph = graph.to_undirected()
+  subgraphs = nx.connected_component_subgraphs(undirected_graph)
+  return subgraphs[:k]
+
 if __name__ == '__main__':
   g = get_graph('/data/512/100-twitter.gexf')
   print_summary(g)
