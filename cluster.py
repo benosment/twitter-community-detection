@@ -55,19 +55,40 @@ def scluster(G, num_clusters=3):
   clusters, labels = kmeans2(S, k=num_clusters, iter=30, minit='points')
   return labels
 
+def scluster2(G, num_clusters=3):
+  D = distance(G)
+  A = affinity(D)
+  labels = spectral_clustering(A, n_clusters=num_clusters)
+  return labels
+
 
 def distance(G):
   "Given a graph, return a distance matrix"
-  pass
+  n = G.number_of_nodes()
+  D = np.zeros((n,n))
+  nodes = G.nodes()
+  for i in range(len(nodes)):
+    for j in range(len(nodes)):
+      D[i][j] = len(nx.shortest_path(G, nodes[i], nodes[j])) - 1
+  return D
 
 def affinity(G, closeness=2):
   "Given a graph, calculate affinity"
   n = G.number_of_nodes()
   A = np.zeros((n,n))
-  adjacencies = G.adjacency_list()
-  for i in range(len(adjacencies)):
-    for num in adjacencies[i]:
-      A[i][num-1] = 1
+  # create node string -> index mapping and
+  # index -> node string mapping
+  i = 0
+  i2s = {}
+  s2i = {}
+  for node in G.nodes():
+    i2s[i] = node
+    s2i[node] = i
+    i +=1 
+  # affinty based on direct neighbors
+  for (v,w) in G.edges():
+    A[s2i[v]][s2i[w]] = 1
+    A[s2i[w]][s2i[v]] = 1
   return A
 
 def diagonal(A):
@@ -102,11 +123,11 @@ if __name__ == '__main__':
   top_subgraphs = graph.get_subgraphs(g, k=1)
   g = top_subgraphs[0]
   graph.display_graph(g)
-  labels = scluster(g,2)
+  labels = scluster2(g,2)
   graph.display_graph_clusters(g,labels)
 
   # working!!
   # g = sample_graph()
   # graph.display_graph(g)
-  # labels = scluster(g,2)
+  # labels = scluster(g,3)
   # graph.display_graph_clusters(g,labels)
