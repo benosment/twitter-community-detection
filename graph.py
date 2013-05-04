@@ -60,6 +60,11 @@ def display_graph(graph):
   nx.draw(graph, pos, with_labels=False, node_size=50)
   plt.show()
 
+def display_graph_clusters(graph,labels):
+  pos = nx.spring_layout(graph)
+  nx.draw(graph, pos, with_labels=False, node_size=50, node_color=labels)
+  plt.show()
+
 def save_graph(graph, filename):
   nx.write_gexf(graph, filename)
 
