@@ -43,3 +43,6 @@ nosetests.xml
 
 # ignore notes
 *.org
+
+# ignore logs
+*.log
